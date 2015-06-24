@@ -6,28 +6,38 @@ $(document).ready(function() {
 		alert("There was an issue, see the error console.");
 	});
 	
-	$("#fetchWIs").click(function() {
-		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0";
-		//var paToken = $("#personalAccessToken").val();
-		var paUserPass = $("#username").val() + ":" + $("#password").val();
-		var paAuthz = Base64.encode(paUserPass);
+	var authzHeader = null;
+	
+	var authenticatedGet = function(url) {
+		if(authzHeader == null) {
+			//var paToken = $("#personalAccessToken").val();
+			var paUserPass = $("#username").val() + ":" + $("#password").val();
+			authzHeader = "Basic " + Base64.encode(paUserPass);
+		}		
 		
-		console.log("Calling: " + vsoUri);
-		$.ajax({
+		console.log("Calling: " + url);
+		return $.ajax({
 			"method": "GET",
-			"url": vsoUri,
+			"url": url,
 			"crossDomain": true,
 			"dataType": "json",
 			"jsonp": false,
 			"headers": {
 				// TODO: use personal access token instead of alt creds
-				"Authorization": "Basic " + paAuthz
+				"Authorization": authzHeader
 			}
-		}).then(function(data){
-			console.log(data);
-			alert("Check console for results!");
-		}).always(function() {
-			console.log("done trying");
+		});
+	};
+	
+	$("#fetchProjects").click(function() {
+		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0";
+		
+		authenticatedGet(vsoUri).then(function(data){
+			if (data && data.count && data.count > 0) {
+				for(var i = 0; i < data.count; i++) {
+					console.log(data.value[i].name);
+				}
+			}
 		});
 	});
 });
