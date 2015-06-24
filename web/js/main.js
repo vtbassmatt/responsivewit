@@ -1,4 +1,10 @@
 $(document).ready(function() {
+	$(document).ajaxError(function(event, jqxhr, settings, err) {
+		console.error({
+			event, jqxhr, settings, err
+		});
+	});
+	
 	$("#fetchWIs").click(function() {
 		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0";
 		var paToken = $("#personalAccessToken").val();
@@ -15,9 +21,6 @@ $(document).ready(function() {
 		}).then(function(data){
 			console.log("Got: " + data);
 			alert("Got: " + data);
-		}).fail(function(jqxhr, status, err){
-			console.error("Whoops: " + status);
-			console.error(err);
 		}).always(function() {
 			console.log("done trying");
 		});
