@@ -7,6 +7,7 @@ $(document).ready(function() {
 	});
 	
 	$("#projectForm").hide();
+	$("#queryForm").hide();
 	var statusText = $("#statusText");
 	
 	var authzHeader = null;
@@ -35,7 +36,7 @@ $(document).ready(function() {
 	$("#fetchProjects").click(function() {
 		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0";
 
-		statusText.val("Fetching projects...");		
+		statusText.text("Fetching projects...");		
 		authenticatedGet(vsoUri).then(function(data){
 			if (data && data.count) {
 				var picker = $("#projectPicker");
@@ -45,10 +46,47 @@ $(document).ready(function() {
 					picker.append("<option value=\"" + id + "\">" + name + "</option>");
 				}
 			}
-			statusText.val("");
+			statusText.text("");
 			$("#projectForm").show();
 		});
 		
 		return false;
 	});
-});
+	
+	var addQuery = function(item, picker) {
+		if(item.isFolder && item.hasChildren && item.children) {
+			// folder
+			picker.append("<optgroup label=\"" + item.name + "\">");
+			for(var i = 0; i < item.children.length; i++) {
+				addQuery(item.children[i], picker);
+			}
+			picker.append("</optgroup>");
+		} else if (item.isFolder) {
+			// empty folder
+			picker.append("<optgroup label=\"" + item.name + " (empty folder)\"></optgroup>");
+		} else {
+			// not a folder, must be a query
+			picker.append("<option value=\"" + item.url + "\">" + item.name + "</option>");
+		}
+	};
+	
+	$("#fetchQueries").click(function() {
+		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/"
+			+ $("#projectPicker").val()
+			+ "/_apis/wit/queries?$depth=2&api-version=1.0";
+
+		statusText.text("Fetching queries...");
+		authenticatedGet(vsoUri).then(function(data){
+			if (data && data.count) {
+				console.log(data);
+				var picker = $("#queryPicker");
+				for(var i = 0; i < data.count; i++) {
+					addQuery(data.value[i], picker);
+				}
+			}
+			statusText.text("");
+			$("#queryForm").show();
+		});
+		
+		return false;
+	});});
