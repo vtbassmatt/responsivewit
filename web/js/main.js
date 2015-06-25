@@ -34,6 +34,7 @@ $(document).ready(function() {
 	};
 	
 	$("#fetchProjects").click(function() {
+		$("#accountForm").slideUp(500);
 		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0";
 
 		statusText.text("Fetching projects...");		
@@ -71,6 +72,7 @@ $(document).ready(function() {
 	};
 	
 	$("#fetchQueries").click(function() {
+		$("#projectForm").slideUp(500);
 		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/"
 			+ $("#projectPicker").val()
 			+ "/_apis/wit/queries?$depth=2&api-version=1.0";
