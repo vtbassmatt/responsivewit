@@ -6,6 +6,9 @@ $(document).ready(function() {
 		alert("There was an issue, see the error console.");
 	});
 	
+	$("#projectForm").hide();
+	var statusText = $("#statusText");
+	
 	var authzHeader = null;
 	
 	var authenticatedGet = function(url) {
@@ -31,13 +34,21 @@ $(document).ready(function() {
 	
 	$("#fetchProjects").click(function() {
 		var vsoUri = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0";
-		
+
+		statusText.val("Fetching projects...");		
 		authenticatedGet(vsoUri).then(function(data){
-			if (data && data.count && data.count > 0) {
+			if (data && data.count) {
+				var picker = $("#projectPicker");
 				for(var i = 0; i < data.count; i++) {
-					console.log(data.value[i].name);
+					var id = data.value[i].id;
+					var name = data.value[i].name;
+					picker.append("<option value=\"" + id + "\">" + name + "</option>");
 				}
 			}
+			statusText.val("");
+			$("#projectForm").show();
 		});
+		
+		return false;
 	});
 });
