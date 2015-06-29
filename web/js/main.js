@@ -91,4 +91,10 @@ $(document).ready(function() {
 		});
 		
 		return false;
-	});});
+	});
+	
+	$("#fetchItems").click(function() {
+		alert("Coming soon!");
+		return false;
+	});
+});
