@@ -14,9 +14,10 @@ $(document).ready(function() {
 	
 	var authenticatedGet = function(url) {
 		if(authzHeader == null) {
-			//var paToken = $("#personalAccessToken").val();
-			var paUserPass = $("#username").val() + ":" + $("#password").val();
-			authzHeader = "Basic " + Base64.encode(paUserPass);
+			var paToken = "token:" + $("#personalAccessToken").val();
+			authzHeader = "Basic " + Base64.encode(paToken);
+			//var paUserPass = $("#username").val() + ":" + $("#password").val();
+			//authzHeader = "Basic " + Base64.encode(paUserPass);
 		}		
 		
 		console.log("Calling: " + url);
@@ -27,8 +28,9 @@ $(document).ready(function() {
 			"dataType": "json",
 			"jsonp": false,
 			"headers": {
-				// TODO: use personal access token instead of alt creds
-				"Authorization": authzHeader
+				"Authorization": authzHeader,
+				// suppress sign-in redirect when using personal access token
+				"X-TFS-FedAuthRedirect": "Suppress"
 			}
 		});
 	};
