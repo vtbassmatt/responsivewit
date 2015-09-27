@@ -89,7 +89,9 @@ $(document).ready(function () {
 				}
 			}
 			statusText.text("");
+			
 			$("#queryForm").show();
+			
 		});
 
 		return false;
@@ -109,13 +111,14 @@ $(document).ready(function () {
 
 		var workItemList = [];
 
-		if (workItemList.length > 0) {
-			authenticatedGet(vsoUri).then(function (data) {
 
-				for (var i = 0; i < data.workItems.length; i++) {
-					workItemList.push(data.workItems[i].id);
-				}
+		authenticatedGet(vsoUri).then(function (data) {
 
+			for (var i = 0; i < data.workItems.length; i++) {
+				workItemList.push(data.workItems[i].id);
+			}
+
+			if (workItemList.length > 0) {
 				var batchURL = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection"
 					+ "/_apis/wit/WorkItems?ids="
 					+ workItemList.join(",") + "&fields=System.Id,System.Title,System.State&api-version=1.0";
@@ -141,13 +144,13 @@ $(document).ready(function () {
 					statusText.text("");
 
 				});
-			});
-		}
-		
-		else
-		{
-			statusText.text("Query returned no results");
-		}
+			}
+			else {
+				statusText.text("Query returned no results");
+			}
+
+		});
+
 
 		return false;
 
