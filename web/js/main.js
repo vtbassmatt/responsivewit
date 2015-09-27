@@ -109,38 +109,45 @@ $(document).ready(function () {
 
 		var workItemList = [];
 
-		authenticatedGet(vsoUri).then(function (data) {
+		if (workItemList.length > 0) {
+			authenticatedGet(vsoUri).then(function (data) {
 
-			for (var i = 0; i < data.workItems.length; i++) {
-				workItemList.push(data.workItems[i].id);
-			}
-
-			var batchURL = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection"
-				+ "/_apis/wit/WorkItems?ids="
-				+ workItemList.join(",") + "&fields=System.Id,System.Title,System.State&api-version=1.0";
-
-			authenticatedGet(batchURL).then(function (data) {
-
-				document.getElementById("resultsTable").style.visibility = "visible"
-				for (var i = 0; i < data.count; i++) {
-					drawRow(data.value[i]);
+				for (var i = 0; i < data.workItems.length; i++) {
+					workItemList.push(data.workItems[i].id);
 				}
 
-				function drawRow(rowData) {
-					var row = $("<tr />")
-					$("#witResults").append(row);
-					row.append($("<td>" + rowData.fields["System.Id"] + "</td>"));
-					row.append($("<td>" + rowData.fields["System.Title"] + "</td>"));
-					row.append($("<td>" + rowData.fields["System.State"] + "</td>"));
-				}
+				var batchURL = "https://" + $("#accountName").val() + ".visualstudio.com/DefaultCollection"
+					+ "/_apis/wit/WorkItems?ids="
+					+ workItemList.join(",") + "&fields=System.Id,System.Title,System.State&api-version=1.0";
 
-				statusText.text("");
+				authenticatedGet(batchURL).then(function (data) {
 
+					document.getElementById("resultsTable").style.visibility = "visible"
+					$("#witResults > tbody").html("");
+					$("#witResults").append("<tr><th>Id</th><th>Title</th><th>State</th></tr>");
+
+					for (var i = 0; i < data.count; i++) {
+						drawRow(data.value[i]);
+					}
+
+					function drawRow(rowData) {
+						var row = $("<tr />")
+						$("#witResults").append(row);
+						row.append($("<td>" + rowData.fields["System.Id"] + "</td>"));
+						row.append($("<td>" + rowData.fields["System.Title"] + "</td>"));
+						row.append($("<td>" + rowData.fields["System.State"] + "</td>"));
+					}
+
+					statusText.text("");
+
+				});
 			});
-		});
-
-		console.log(workItemList);
-
+		}
+		
+		else
+		{
+			statusText.text("Query returned no results");
+		}
 
 		return false;
 
