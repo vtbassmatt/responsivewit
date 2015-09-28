@@ -4,7 +4,11 @@
    Author's custom styles
    ========================================================================== */
 
-
+#resultsTable
+{
+    padding-top:10px;
+    visibility: hidden;
+}
 
 
 
